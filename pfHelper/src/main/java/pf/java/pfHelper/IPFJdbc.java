@@ -1,4 +1,4 @@
-package com.perfect.pfHelper;
+package pf.java.pfHelper;
 
 public interface IPFJdbc {
 
