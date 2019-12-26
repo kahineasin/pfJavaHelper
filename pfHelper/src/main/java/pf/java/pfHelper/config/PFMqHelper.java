@@ -21,14 +21,11 @@ public class PFMqHelper {
 	}
 	//@FunctionalInterface
 	public interface PFDeliverCallback {
-
-	    /**
-	     * Called when a <code><b>basic.deliver</b></code> is received for this consumer.
-	     * @param consumerTag the <i>consumer tag</i> associated with the consumer
-	     * @param message the delivered message
-	     * @throws IOException if the consumer encounters an I/O error while processing the message
-	     */
 	    void handle(String consumerTag, PFMqMessage message) ;
+	    PFMqConfig GetMqConfig(PFMqConfig mqConfig);
+	    
+	}
+	public interface PFProdutTask {
 	    PFMqConfig GetMqConfig(PFMqConfig mqConfig);
 	    
 	}
@@ -61,6 +58,19 @@ public class PFMqHelper {
 				break;
 			case AliMq:
 				(new PFMq(_mqConfig)).BuildAliMqProducer(message);
+				break;
+			default:
+				break;
+		}
+	}
+	public static void BuildProducer(String message,PFProdutTask task) {
+		 PFMqConfig mqConfig=task.GetMqConfig(_mqConfig);
+		switch(_mqType) {
+			case RabbitMq:
+				(new PFMq(mqConfig)).BuildMqProducer(message);
+				break;
+			case AliMq:
+				(new PFMq(mqConfig)).BuildAliMqProducer(message);
 				break;
 			default:
 				break;
