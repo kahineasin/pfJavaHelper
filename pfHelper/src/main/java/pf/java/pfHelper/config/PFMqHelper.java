@@ -19,7 +19,7 @@ public class PFMqHelper {
 	public  enum PFMqType{
 		AliMq,RabbitMq
 	}
-	@FunctionalInterface
+	//@FunctionalInterface
 	public interface PFDeliverCallback {
 
 	    /**
@@ -28,7 +28,9 @@ public class PFMqHelper {
 	     * @param message the delivered message
 	     * @throws IOException if the consumer encounters an I/O error while processing the message
 	     */
-	    void handle(String consumerTag, PFMqMessage message) throws IOException;
+	    void handle(String consumerTag, PFMqMessage message) ;
+	    PFMqConfig GetMqConfig(PFMqConfig mqConfig);
+	    
 	}
 
 	private static PFMqType _mqType=PFMqType.RabbitMq;

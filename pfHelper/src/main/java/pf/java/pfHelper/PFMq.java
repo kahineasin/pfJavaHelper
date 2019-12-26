@@ -41,7 +41,8 @@ public class PFMq {
 		try {
 			connection = factory.newConnection();
 		    Channel channel = connection.createChannel();
-		    String QUEUE_NAME=_mqConfig.getQueueName();
+		    PFMqConfig mqConfig=pfDeliverCallback.GetMqConfig(_mqConfig);
+		    String QUEUE_NAME=mqConfig.getQueueName();
 		    channel.queueDeclare(QUEUE_NAME, false, false, false, null);
 		    System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 	
@@ -73,14 +74,16 @@ public class PFMq {
 //          "172.100.2.212:9876;172.100.2.164:9876;172.100.15.35:9876");
 
 
-        properties.put(PropertyKeyConst.GROUP_ID, _mqConfig.getGroupId());
+	    PFMqConfig mqConfig=pfDeliverCallback.GetMqConfig(_mqConfig);
+	    
+        properties.put(PropertyKeyConst.GROUP_ID, mqConfig.getGroupId());
      // AccessKey 阿里云身份验证，在阿里云服务器管理控制台创建
-        properties.put(PropertyKeyConst.AccessKey, _mqConfig.getAccessKey());
+        properties.put(PropertyKeyConst.AccessKey, mqConfig.getAccessKey());
      // SecretKey 阿里云身份验证，在阿里云服务器管理控制台创建
-        properties.put(PropertyKeyConst.SecretKey, _mqConfig.getSecretKey());
+        properties.put(PropertyKeyConst.SecretKey, mqConfig.getSecretKey());
      // 设置 TCP 接入域名（此处以公共云生产环境为例）
         properties.put(PropertyKeyConst.NAMESRV_ADDR,
-        		_mqConfig.getNameSrvAddr());
+        		mqConfig.getNameSrvAddr());
         
         
         // 集群订阅方式 (默认)
@@ -106,14 +109,9 @@ public class PFMq {
                 return Action.CommitMessage;
             }
         });*/
-		consumer.subscribe(_mqConfig.getTopic(), "*", new MessageListener() { //����ȫ��Tag
+		consumer.subscribe(mqConfig.getTopic(), "*", new MessageListener() { //����ȫ��Tag
 		    public Action consume(Message message, ConsumeContext context) {
-					try {
-						pfDeliverCallback.handle("", new PFMqMessage(message));
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}	
+				pfDeliverCallback.handle("", new PFMqMessage(message));
 		    	return Action.CommitMessage;
 		    }
 		});
