@@ -128,8 +128,7 @@ public class PFMq {
             		 ) {
         	try {
             channel.queueDeclare(_mqConfig.getQueueName(), false, false, false, null);
-            String strMessage = "Hello World!";
-            channel.basicPublish("", _mqConfig.getQueueName(), null, strMessage.getBytes("UTF-8"));
+            channel.basicPublish("", _mqConfig.getQueueName(), null, message.getBytes("UTF-8"));
             System.out.println(" [x] Sent '" + message + "'");
         	}catch(Exception e) {
         		
