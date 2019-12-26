@@ -44,12 +44,10 @@ public class PFMq {
 		    PFMqConfig mqConfig=pfDeliverCallback.GetMqConfig(_mqConfig);
 		    String QUEUE_NAME=mqConfig.getQueueName();
 		    channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-		    System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
+		    System.out.println(" [*][rabbitMq] "+QUEUE_NAME+" Waiting for messages. To exit press CTRL+C");
 	
 		    DeliverCallback deliverCallback = (consumerTag, delivery) -> {
 		    	pfDeliverCallback.handle(consumerTag, new PFMqMessage(delivery));
-//		        String message = new String(delivery.getBody(), "UTF-8");
-//		        System.out.println(" [x] Received '" + message + "'");
 		    };
 		    channel.basicConsume(QUEUE_NAME, true, deliverCallback, consumerTag -> { });
 		} catch (IOException | TimeoutException e) {
