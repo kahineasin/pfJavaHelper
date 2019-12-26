@@ -20,7 +20,7 @@ public class PFMqHelper {
 		AliMq,RabbitMq
 	}
 	//@FunctionalInterface
-	public interface PFDeliverCallback {
+	public interface PFConsumerTask {
 	    void handle(String consumerTag, PFMqMessage message) ;
 	    PFMqConfig GetMqConfig(PFMqConfig mqConfig);
 	    
@@ -37,15 +37,18 @@ public class PFMqHelper {
     public PFMqHelper(PFMqConfig mqConfig,ApplicationContext applicationContext) {
     	PFMqHelper._mqConfig = mqConfig;
     	PFMqHelper._applicationContext=applicationContext;
-    	_mqType=PFMqType.valueOf(mqConfig.getMqType());
+    	//_mqType=PFMqType.valueOf(mqConfig.getMqType());
+    	_mqType=mqConfig.getMqType();
     }
-	public static void BuildConsumer(PFDeliverCallback pfDeliverCallback) {
-		switch(_mqType) {
+	public static void BuildConsumer(PFConsumerTask task) {
+		 PFMqConfig mqConfig=task.GetMqConfig(PFMqConfig.class.cast(_mqConfig.clone()));
+		 PFMqType mqType=mqConfig.getMqType();
+		switch(mqType) {
 			case RabbitMq:
-				(new PFMq(_mqConfig)).BuildRabbitMqConsumer(pfDeliverCallback);
+				(new PFMq(mqConfig)).BuildRabbitMqConsumer(task);
 				break;
 			case AliMq:
-				(new PFMq(_mqConfig)).BuildAliMqConsumer(pfDeliverCallback);
+				(new PFMq(mqConfig)).BuildAliMqConsumer(task);
 				break;
 			default:
 				break;
@@ -64,8 +67,9 @@ public class PFMqHelper {
 		}
 	}
 	public static void BuildProducer(String message,PFProdutTask task) {
-		 PFMqConfig mqConfig=task.GetMqConfig(_mqConfig);
-		switch(_mqType) {
+		 PFMqConfig mqConfig=task.GetMqConfig(PFMqConfig.class.cast(_mqConfig.clone()));
+		 PFMqType mqType=mqConfig.getMqType();
+		switch(mqType) {
 			case RabbitMq:
 				(new PFMq(mqConfig)).BuildMqProducer(message);
 				break;
@@ -79,13 +83,13 @@ public class PFMqHelper {
  
 	public static void ListenMq() {
 	   
-		   Map<String,PFDeliverCallback> res = _applicationContext.getBeansOfType(PFDeliverCallback.class);
-		   Iterator<Entry<String, PFDeliverCallback>> iter = res.entrySet().iterator();
+		   Map<String,PFConsumerTask> res = _applicationContext.getBeansOfType(PFConsumerTask.class);
+		   Iterator<Entry<String, PFConsumerTask>> iter = res.entrySet().iterator();
 		   while(iter.hasNext()){
-			   Entry<String, PFDeliverCallback> key=iter.next();
-			   PFDeliverCallback tmpObj;
+			   Entry<String, PFConsumerTask> key=iter.next();
+			   PFConsumerTask tmpObj;
 				try {
-					tmpObj = PFDeliverCallback.class.cast(key.getValue().getClass().newInstance());
+					tmpObj = PFConsumerTask.class.cast(key.getValue().getClass().newInstance());
 				    PFMqHelper.BuildConsumer(tmpObj);
 				} catch (InstantiationException e) {
 					// TODO Auto-generated catch block
@@ -96,4 +100,5 @@ public class PFMqHelper {
 				}
 		   }
 	}
+	
 }

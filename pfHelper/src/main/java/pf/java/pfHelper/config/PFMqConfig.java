@@ -5,8 +5,10 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import pf.java.pfHelper.config.PFMqHelper.PFMqType;
+
 @Component
-public class PFMqConfig {
+public class PFMqConfig  implements Cloneable{
 
     @PostConstruct
     public void beforeInit() {
@@ -29,11 +31,18 @@ public class PFMqConfig {
 	  private  String secretKey;
 	  @Value("${pf.mq.topic}")
 	  private  String topic;
-	  public String getMqType() {
-		return mqType;
+
+//	  public String getMqType() {
+//		return mqType;
+//	}
+//	public void setMqType(String mqType) {
+//		this.mqType = mqType;
+//	}
+	  public PFMqType getMqType() {
+		return PFMqType.valueOf(mqType);
 	}
-	public void setMqType(String mqType) {
-		this.mqType = mqType;
+	public void setMqType(PFMqType mqType) {
+		this.mqType = mqType.toString();
 	}
 
 	public String getQueueName() {
@@ -73,4 +82,15 @@ public class PFMqConfig {
 		public void setTopic(String topic) {
 			this.topic = topic;
 		}
+		   @Override  
+		    public Object clone() {  
+			   PFMqConfig stu = null;  
+		        try{  
+		            stu = (PFMqConfig)super.clone();  
+		        }catch(CloneNotSupportedException e) {  
+		            e.printStackTrace();  
+		        }  
+		        return stu;  
+		    }  
+
 }

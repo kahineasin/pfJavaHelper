@@ -23,7 +23,7 @@ import com.rabbitmq.client.DeliverCallback;
 
 import pf.java.pfHelper.config.PFDataHelper;
 import pf.java.pfHelper.config.PFMqConfig;
-import pf.java.pfHelper.config.PFMqHelper.PFDeliverCallback;
+import pf.java.pfHelper.config.PFMqHelper.PFConsumerTask;
 
 public class PFMq {
     private  PFMqConfig _mqConfig;
@@ -32,7 +32,7 @@ public class PFMq {
 	}
 	
 
-	public  void BuildRabbitMqConsumer(PFDeliverCallback pfDeliverCallback) {
+	public  void BuildRabbitMqConsumer(PFConsumerTask pfDeliverCallback) {
 
     	//rabbitmq
     	com.rabbitmq.client.ConnectionFactory factory = new com.rabbitmq.client.ConnectionFactory();
@@ -57,7 +57,7 @@ public class PFMq {
 			e.printStackTrace();
 		}
 	}
-	public  void BuildAliMqConsumer(PFDeliverCallback pfDeliverCallback) {
+	public  void BuildAliMqConsumer(PFConsumerTask pfDeliverCallback) {
 		//参考:D:\eclipse_workspace\IpaasTest\src\com\mq\simple\ConsumerTest.java
         Properties properties = new Properties();
         
